@@ -17,6 +17,7 @@ namespace WorkControl
     /// </summary>
     class Logger
     {
+        //singletone
         private static Logger self;
 
         public static Logger Self
@@ -30,26 +31,55 @@ namespace WorkControl
                 return self;
             }
         }
+        /// <summary>
+        /// Path to file with logs
+        /// </summary>
         const string LOG_FNAME = "log.csv";
-        public List<LogItem> log;
+        /// <summary>
+        /// List of all log events
+        /// </summary>
+        public ILog log;
 
         private StreamWriter sw;
+        /// <summary>
+        /// Number of pressed keys after previous tick
+        /// </summary>
         int keypressCount;
 
         private Logger()
         {
-            log = new List<LogItem>();
+            log = new Log();
+            if (File.Exists(LOG_FNAME))
+            {
+
+                string[] lines = File.ReadAllLines(LOG_FNAME);
+                /*foreach (var line in lines)
+                {
+                    LogItem item = LogItem.FromCSVRow(line);
+                    log.Add(item);
+                }*/
+                log.AddRangeOfItems(new List<LogItem>(from c in lines select LogItem.FromCSVRow(c)));
+                
+            }
             _proc = HookCallback;
-            _hookID = SetHook(_proc);
-            sw = new StreamWriter(LOG_FNAME,true,Encoding.Default);
+            
+            
         }
 
         ~Logger()
         {
-            UnhookWindowsHookEx(_hookID);
+            if(_hookID != IntPtr.Zero)
+                UnhookWindowsHookEx(_hookID);
             //sw.Close();
         }
-        
+        /// <summary>
+        /// Init the logger to be ready for logging
+        /// </summary>
+        public void Init()
+        {
+            _hookID = SetHook(_proc);
+            sw = new StreamWriter(LOG_FNAME, true, Encoding.Default);
+        }
         /// <summary>
         /// Log state for now
         /// </summary>
@@ -61,7 +91,7 @@ namespace WorkControl
             LogItem item = new LogItem(UnixTimestamp.GetFromDatatime(DateTime.Now), title, pname, cursorPos,
                 keypressCount);
             TryToGetExtraInfo(item);
-            log.Add(item);
+            log.PutItem(item);
             sw.WriteLine(item.ToCSVRow());
             sw.Flush();
             keypressCount = 0;
@@ -85,7 +115,7 @@ namespace WorkControl
             AutomationElementCollection edits5 = element.FindAll(TreeScope.Subtree, new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Edit));
             AutomationElement edit = edits5[0];
             string vp = ((ValuePattern)edit.GetCurrentPattern(ValuePattern.Pattern)).Current.Value as string;
-            Console.WriteLine(vp);
+            //Console.WriteLine(vp);
             return vp;
         }
         [DllImport("user32.dll")]

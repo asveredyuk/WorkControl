@@ -18,6 +18,7 @@ namespace WorkControl
         {
             InitializeComponent();
             logger = Logger.Self;
+            logger.Init();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -27,9 +28,15 @@ namespace WorkControl
         private void timer1_Tick(object sender, EventArgs e)
         {
             logger.LogNow();
-            LogItem last = logger.log.Last();
-            textBox1.AppendText(last.ToString() + "\r\n");
+            //LogItem last = logger.log.Last();
+          //  textBox1.AppendText(last.ToString() + "\r\n");
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            DateTime time = new DateTime();
+            time = time.AddSeconds(logger.log.GetWorkedSeconds());
+            button1.Text = time.ToString("T");
+        }
     }
 }
