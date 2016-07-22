@@ -19,6 +19,10 @@ namespace WorkControl
         public Point cursorPos;
         public int keypressCount;
         public string extraInfo;
+        /// <summary>
+        /// Link to the previous element, if exitst
+        /// </summary>
+        public LogItem previus;
 
         public LogItem(int time, string activeWindowTitle, string activeWindowProcessName, Point cursorPos, int keypressCount)
         {
@@ -56,5 +60,23 @@ namespace WorkControl
             }
             return item;
         }
+
+        /// <summary>
+        /// Get specified number of previous elements, if exists
+        /// </summary>
+        /// <param name="num">Number of elements</param>
+        /// <returns></returns>
+        public IEnumerable<LogItem> GetPreviousElements(int num)
+        {
+            if(num <= 0)
+                yield break;
+            if(previus == null)
+                yield break;
+            yield return previus;
+            foreach (var previousElement in previus.GetPreviousElements(num-1))
+            {
+                yield return previousElement;
+            }
+        } 
     }
 }

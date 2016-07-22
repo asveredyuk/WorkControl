@@ -38,7 +38,7 @@ namespace WorkControl
         /// <summary>
         /// List of all log events
         /// </summary>
-        public ILog log;
+        public Log log;
 
         private StreamWriter sw;
         /// <summary>
@@ -53,13 +53,20 @@ namespace WorkControl
             {
 
                 string[] lines = File.ReadAllLines(LOG_FNAME);
-                /*foreach (var line in lines)
+                List<LogItem> items = new List<LogItem>();
+                
+                foreach (var line in lines)
                 {
                     LogItem item = LogItem.FromCSVRow(line);
-                    log.Add(item);
-                }*/
-                log.AddRangeOfItems(new List<LogItem>(from c in lines select LogItem.FromCSVRow(c)));
-                
+                    if (prev != null && ((item.time - prev.time) < 3))
+                    {
+                        item.previus = prev;
+                    }
+                    items.Add(item);
+                    prev = item;
+                }
+                //log.AddRangeOfItems(new List<LogItem>(from c in lines select LogItem.FromCSVRow(c)));
+
             }
             _proc = HookCallback;
             
@@ -81,6 +88,10 @@ namespace WorkControl
             sw = new StreamWriter(LOG_FNAME, true, Encoding.Default);
         }
         /// <summary>
+        /// Last added item
+        /// </summary>
+        LogItem prev;
+        /// <summary>
         /// Log state for now
         /// </summary>
         public void LogNow()
@@ -90,6 +101,11 @@ namespace WorkControl
             Point cursorPos = GetMousePosition();
             LogItem item = new LogItem(UnixTimestamp.GetFromDatatime(DateTime.Now), title, pname, cursorPos,
                 keypressCount);
+            if (prev != null && ((item.time - prev.time) < 3))
+            {
+                item.previus = prev;
+            }
+            prev = item;
             TryToGetExtraInfo(item);
             log.PutItem(item);
             sw.WriteLine(item.ToCSVRow());

@@ -28,6 +28,16 @@ namespace WorkControl
         private void timer1_Tick(object sender, EventArgs e)
         {
             logger.LogNow();
+            if (logger.log.IsActiveLast())
+            {
+                BackColor = Color.Green;
+                //button1.Text = "active";
+            }
+            else
+            {
+                BackColor = Color.Red;
+                //button1.Text = "not active";
+            }
             //LogItem last = logger.log.Last();
           //  textBox1.AppendText(last.ToString() + "\r\n");
         }
