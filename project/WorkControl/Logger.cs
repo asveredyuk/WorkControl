@@ -45,6 +45,10 @@ namespace WorkControl
         /// Number of pressed keys after previous tick
         /// </summary>
         int keypressCount;
+        /// <summary>
+        /// Number of mouse actions (buttons down and wheel move)
+        /// </summary>
+        int mouseActionsCount;
 
         private Logger()
         {
@@ -68,15 +72,18 @@ namespace WorkControl
                 //log.AddRangeOfItems(new List<LogItem>(from c in lines select LogItem.FromCSVRow(c)));
 
             }
-            _proc = HookCallback;
-            
-            
+            _keysProc = HookCallback;
+            _proc = MouseHookCallback;
+
+
         }
 
         ~Logger()
         {
-            if(_hookID != IntPtr.Zero)
-                UnhookWindowsHookEx(_hookID);
+            if(_keysHookID != IntPtr.Zero)
+                UnhookWindowsHookEx(_keysHookID);
+            if(_mouseHookID != IntPtr.Zero)
+                UnhookWindowsHookEx(_mouseHookID);
             //sw.Close();
         }
         /// <summary>
@@ -84,7 +91,9 @@ namespace WorkControl
         /// </summary>
         public void Init()
         {
-            _hookID = SetHook(_proc);
+            _keysHookID = SetHook(_keysProc);
+            _mouseHookID = SetHook(_proc);
+            
             sw = new StreamWriter(LOG_FNAME, true, Encoding.Default);
         }
         /// <summary>
@@ -100,7 +109,7 @@ namespace WorkControl
             string pname = GetActiveWindowProcessName();
             Point cursorPos = GetMousePosition();
             LogItem item = new LogItem(UnixTimestamp.GetFromDatatime(DateTime.Now), title, pname, cursorPos,
-                keypressCount);
+                keypressCount,mouseActionsCount);
             if (prev != null && ((item.time - prev.time) < 3))
             {
                 item.previus = prev;
@@ -111,6 +120,7 @@ namespace WorkControl
             sw.WriteLine(item.ToCSVRow());
             sw.Flush();
             keypressCount = 0;
+            mouseActionsCount = 0;
         }
 
         private void TryToGetExtraInfo(LogItem item)
@@ -182,8 +192,8 @@ namespace WorkControl
 
         private const int WM_KEYDOWN = 0x0100;
 
-        private  IntPtr _hookID = IntPtr.Zero;
-        private LowLevelKeyboardProc _proc;
+        private  IntPtr _keysHookID = IntPtr.Zero;
+        private LowLevelKeyboardProc _keysProc;
         private  IntPtr SetHook(LowLevelKeyboardProc proc)
 
         {
@@ -224,7 +234,7 @@ namespace WorkControl
 
             }
 
-            return CallNextHookEx(_hookID, nCode, wParam, lParam);
+            return CallNextHookEx(_keysHookID, nCode, wParam, lParam);
 
         }
 
@@ -253,5 +263,102 @@ namespace WorkControl
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
 
         private static extern IntPtr GetModuleHandle(string lpModuleName);
+
+
+
+
+        private LowLevelMouseProc _proc;
+
+        private IntPtr _mouseHookID = IntPtr.Zero;
+
+
+        private IntPtr SetHook(LowLevelMouseProc proc)
+
+        {
+
+            using (Process curProcess = Process.GetCurrentProcess())
+
+            using (ProcessModule curModule = curProcess.MainModule)
+
+            {
+
+                return SetWindowsHookEx(WH_MOUSE_LL, proc,
+
+                    GetModuleHandle(curModule.ModuleName), 0);
+
+            }
+
+        }
+
+
+        private delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
+
+
+        private IntPtr MouseHookCallback(
+
+            int nCode, IntPtr wParam, IntPtr lParam)
+
+        {
+
+            //if (nCode >= 0 &&
+
+            //    MouseMessages.WM_LBUTTONDOWN == (MouseMessages)wParam)
+
+            //{
+
+            //    MSLLHOOKSTRUCT hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
+
+            //    Console.WriteLine(hookStruct.pt.x + ", " + hookStruct.pt.y);
+
+            //}
+            if (nCode >= 0)
+            {
+                //check the action
+                if (MouseMessages.WM_LBUTTONDOWN == (MouseMessages)wParam || MouseMessages.WM_RBUTTONDOWN == (MouseMessages)wParam || MouseMessages.WM_MOUSEWHEEL == (MouseMessages)wParam)
+                {
+                    mouseActionsCount++;
+                    //Console.WriteLine("mouse action!");
+                }
+            }
+
+            return CallNextHookEx(_mouseHookID, nCode, wParam, lParam);
+
+        }
+
+
+        private const int WH_MOUSE_LL = 14;
+
+
+        private enum MouseMessages
+
+        {
+
+            WM_LBUTTONDOWN = 0x0201,
+
+            WM_LBUTTONUP = 0x0202,
+
+            WM_MOUSEMOVE = 0x0200,
+
+            WM_MOUSEWHEEL = 0x020A,
+
+            WM_RBUTTONDOWN = 0x0204,
+
+            WM_RBUTTONUP = 0x0205
+
+        }
+
+
+
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+
+        private static extern IntPtr SetWindowsHookEx(int idHook,
+
+            LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);
+
     }
+
+
+
+
 }

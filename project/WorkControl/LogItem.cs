@@ -18,24 +18,32 @@ namespace WorkControl
         public string ActiveWindowProcessName;
         public Point cursorPos;
         public int keypressCount;
+        public int mouseActionsCount;
         public string extraInfo;
         /// <summary>
         /// Link to the previous element, if exitst
         /// </summary>
         public LogItem previus;
 
-        public LogItem(int time, string activeWindowTitle, string activeWindowProcessName, Point cursorPos, int keypressCount)
+        public LogItem(int time, string activeWindowTitle, string activeWindowProcessName, Point cursorPos, int keypressCount, int mouseActionsCount)
         {
             this.time = time;
+            if (activeWindowTitle == null)
+                activeWindowTitle = "null";
             ActiveWindowTitle = activeWindowTitle.Replace(";","").Replace("\r","").Replace("\n","");
             ActiveWindowProcessName = activeWindowProcessName;
             this.cursorPos = cursorPos;
             this.keypressCount = keypressCount;
             this.extraInfo = "";
+            this.mouseActionsCount = mouseActionsCount;
         }
 
         public void PutExtraInfo(string info)
         {
+            if (info==null)
+            {
+                info = "null";
+            }
             this.extraInfo = info.Replace(";", "").Replace("\r", "").Replace("\n", "");
         }
 
@@ -47,16 +55,16 @@ namespace WorkControl
 
         public string ToCSVRow()
         {
-            return $"{time};{ActiveWindowTitle};{ActiveWindowProcessName};{cursorPos.X};{cursorPos.Y};{keypressCount};{extraInfo}";
+            return $"{time};{ActiveWindowTitle};{ActiveWindowProcessName};{cursorPos.X};{cursorPos.Y};{keypressCount};{mouseActionsCount};{extraInfo}";
         }
 
         public static LogItem FromCSVRow(string row)
         {
             string[] arr = row.Split(';');
-            var item = new LogItem(int.Parse(arr[0]),arr[1],arr[2],new Point(int.Parse(arr[3]), int.Parse(arr[4])),int.Parse(arr[5]));
-            if (arr.Length > 6)
+            var item = new LogItem(int.Parse(arr[0]),arr[1],arr[2],new Point(int.Parse(arr[3]), int.Parse(arr[4])),int.Parse(arr[5]), int.Parse(arr[6]));
+            if (arr.Length > 7)
             {
-                item.PutExtraInfo(arr[6]);
+                item.PutExtraInfo(arr[7]);
             }
             return item;
         }
