@@ -44,7 +44,7 @@ namespace WorkControl
             log.AddRange(items);
         }
         /// <summary>
-        /// Get number of seconds, spent to work
+        /// Get number of seconds, spent to Work
         /// </summary>
         /// <returns></returns>
         public int GetWorkedSeconds()

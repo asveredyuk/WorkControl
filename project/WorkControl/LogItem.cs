@@ -147,5 +147,10 @@ namespace WorkControl
                           Math.Min(mouseDif / MOUSEDIF_DIVIDER, 1);
             return score >= MIN_ACTIVITY_SCORE;
         }
+
+        public Settings.Lists.ScoreType GetProcesScoreType()
+        {
+            return Settings.Self.ScoreLists.GetProceScoreType(activeWindowProcessName);
+        }
     }
 }

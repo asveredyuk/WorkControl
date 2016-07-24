@@ -67,7 +67,20 @@ namespace WorkControl
             int timeCounter = 0;
             foreach (var pair in from c in rep.Times orderby c.Value descending select c)
             {
-                LogLine($"{pair.Key}\t-\t{UnixTimestamp.ConvertIntervalToDateTime(pair.Value).ToLongTimeString()}");
+                string type = "unknown";
+                switch (Settings.Self.ScoreLists.GetProceScoreType(pair.Key))
+                {
+                    case Settings.Lists.ScoreType.Nonwork:
+                        type = "bad";
+                        break;
+                    case Settings.Lists.ScoreType.Neutral:
+                        type = "neutral";
+                        break;
+                    case Settings.Lists.ScoreType.Work:
+                        type = "good";
+                        break;
+                }
+                LogLine($"{pair.Key}({type})\t-\t{UnixTimestamp.ConvertIntervalToDateTime(pair.Value).ToLongTimeString()}");
                 counter++;
                 timeCounter += pair.Value;
                 if (counter >= LIMIT)
@@ -79,7 +92,7 @@ namespace WorkControl
             {
                 // we have more
                 int totalTime = rep.Times.Sum(p => p.Value);
-                LogLine($"other\t-\t{UnixTimestamp.ConvertIntervalToDateTime(totalTime-timeCounter).ToLongTimeString()}");
+                LogLine($"other\t-\t{UnixTimestamp.ConvertIntervalToDateTime(totalTime - timeCounter).ToLongTimeString()}");
             }
         }
     }
