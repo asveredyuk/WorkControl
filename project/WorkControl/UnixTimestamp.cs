@@ -17,5 +17,10 @@ namespace WorkControl
         {
             return new DateTime(1970, 1, 1).AddSeconds(time);
         }
+
+        public static DateTime ConvertIntervalToDateTime(int interval)
+        {
+            return new DateTime().AddSeconds(interval);
+        }
     }
 }

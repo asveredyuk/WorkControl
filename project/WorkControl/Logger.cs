@@ -69,6 +69,7 @@ namespace WorkControl
                     items.Add(item);
                     prev = item;
                 }
+                log.AddRangeOfItems(items);
                 //log.AddRangeOfItems(new List<LogItem>(from c in lines select LogItem.FromCSVRow(c)));
 
             }
@@ -125,7 +126,7 @@ namespace WorkControl
 
         private void TryToGetExtraInfo(LogItem item)
         {
-            if (item.ActiveWindowProcessName == "chrome")
+            if (item.activeWindowProcessName == "chrome")
             {
                 item.PutExtraInfo(GetChromeUrl());
             }

@@ -13,12 +13,33 @@ namespace WorkControl
     /// </summary>
     class LogItem
     {
+        /// <summary>
+        /// Unix timestamp of item captured
+        /// </summary>
         public int time;
-        public string ActiveWindowTitle;
-        public string ActiveWindowProcessName;
+        /// <summary>
+        /// Title of active window
+        /// </summary>
+        public string activeWindowTitle;
+        /// <summary>
+        /// Name of process-owner of active window
+        /// </summary>
+        public string activeWindowProcessName;
+        /// <summary>
+        /// Mouse position
+        /// </summary>
         public Point cursorPos;
+        /// <summary>
+        /// Count of pressed keys on keyboard
+        /// </summary>
         public int keypressCount;
+        /// <summary>
+        /// Count of actions by mouse (clicks, wheel moves)
+        /// </summary>
         public int mouseActionsCount;
+        /// <summary>
+        /// Extra info (depends of process, e.g. for chrome this is current URL)
+        /// </summary>
         public string extraInfo;
         /// <summary>
         /// Link to the previous element, if exitst
@@ -30,14 +51,17 @@ namespace WorkControl
             this.time = time;
             if (activeWindowTitle == null)
                 activeWindowTitle = "null";
-            ActiveWindowTitle = activeWindowTitle.Replace(";","").Replace("\r","").Replace("\n","");
-            ActiveWindowProcessName = activeWindowProcessName;
+            this.activeWindowTitle = activeWindowTitle.Replace(";","").Replace("\r","").Replace("\n","");
+            this.activeWindowProcessName = activeWindowProcessName;
             this.cursorPos = cursorPos;
             this.keypressCount = keypressCount;
             this.extraInfo = "";
             this.mouseActionsCount = mouseActionsCount;
         }
-
+        /// <summary>
+        /// Add extra info
+        /// </summary>
+        /// <param name="info"></param>
         public void PutExtraInfo(string info)
         {
             if (info==null)
@@ -50,14 +74,21 @@ namespace WorkControl
         public override string ToString()
         {
             return extraInfo; //keypressCount.ToString(); //cursorPos.ToString();
-            //return $"Time: {UnixTimestamp.ConvertToDatetime(time).ToString("T")}, ActiveWindowTitle: {ActiveWindowTitle}, ActiveWindowProcessName: {ActiveWindowProcessName}";
+            //return $"Time: {UnixTimestamp.ConvertToDatetime(time).ToString("T")}, activeWindowTitle: {activeWindowTitle}, activeWindowProcessName: {activeWindowProcessName}";
         }
-
+        /// <summary>
+        /// Convert item to csv row
+        /// </summary>
+        /// <returns></returns>
         public string ToCSVRow()
         {
-            return $"{time};{ActiveWindowTitle};{ActiveWindowProcessName};{cursorPos.X};{cursorPos.Y};{keypressCount};{mouseActionsCount};{extraInfo}";
+            return $"{time};{activeWindowTitle};{activeWindowProcessName};{cursorPos.X};{cursorPos.Y};{keypressCount};{mouseActionsCount};{extraInfo}";
         }
-
+        /// <summary>
+        /// Create new item from csv row (factory)
+        /// </summary>
+        /// <param name="row"></param>
+        /// <returns></returns>
         public static LogItem FromCSVRow(string row)
         {
             string[] arr = row.Split(';');
@@ -85,6 +116,36 @@ namespace WorkControl
             {
                 yield return previousElement;
             }
-        } 
+        }
+        /// <summary>
+        /// Is item active, or computer stays alone
+        /// </summary>
+        /// <returns></returns>
+        public bool IsActive()
+        {
+            const int LAST_NUM = 20;
+            const float MIN_ACTIVITY_SCORE = 1f;
+
+            const float KEYPRESS_DIVIDER = 5;
+            const float MOUSE_ACTION_DIVIDER = 5;
+            const float MOUSEDIF_DIVIDER = 300;
+            //const int MIN_KEYS = 2;
+            //const int MIN_MOUSEDIF = 50;
+            List<LogItem> prev = new List<LogItem>(GetPreviousElements(LAST_NUM));
+            int keysPressed = prev.Sum(e => e.keypressCount);
+            int mouseActions = prev.Sum(e => e.mouseActionsCount);
+            Point mousepos = cursorPos;
+            int mouseDif = 0;
+            foreach (var previousElement in prev)
+            {
+                mouseDif += Math.Abs(mousepos.X - previousElement.cursorPos.X) +
+                            Math.Abs(mousepos.Y - previousElement.cursorPos.Y);
+                mousepos = previousElement.cursorPos;
+            }
+            //float keypress_score = keysPressed/KEYPRESS_DIVIDER;
+            float score = Math.Min(keysPressed / KEYPRESS_DIVIDER, 1) + Math.Min(mouseActions / MOUSE_ACTION_DIVIDER, 1) +
+                          Math.Min(mouseDif / MOUSEDIF_DIVIDER, 1);
+            return score >= MIN_ACTIVITY_SCORE;
+        }
     }
 }
