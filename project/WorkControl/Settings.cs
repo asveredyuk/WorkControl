@@ -61,10 +61,37 @@ namespace WorkControl
                     return ScoreType.Unknown;
                 return processTypes[pnamelower];
             }
-            public ScoreType GetSiteScoreType(string sname)
+            public ScoreType GetSiteScoreType(string hname)
             {
-                //TODO: implement for sites
-                throw new NotImplementedException();
+                string host = GetKnownHostName(hname);
+                if (host != null)
+                    return siteTypes[host];
+                return ScoreType.Unknown;
+            }
+            /// <summary>
+            /// Get known domain
+            /// </summary>
+            /// <param name="host">host name like www.example.com</param>
+            /// <returns></returns>
+            public string GetKnownHostName(string host)
+            {
+                //domain is going up until it is 1st level
+                //ex. : we have www.travel.domain.com
+                //1 - try to find www.travel.domain.com, if not found
+                //2 - try to find travel.domain.com, if not found
+                //3 - try to find domain.com, if not found
+                //this domain is unknown
+                while (host.Contains("."))
+                {
+                    if (siteTypes.ContainsKey(host))
+                    {
+                        return host;
+                    }
+                    //go to the upper level
+                    int pos = host.IndexOf(".");
+                    host = host.Substring(pos + 1);
+                }
+                return null;
             }
             public void Save()
             {

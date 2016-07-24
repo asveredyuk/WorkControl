@@ -67,6 +67,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reports\ActivityReport.cs" />
     <Compile Include="Reports\ProcessesReport.cs" />
+    <Compile Include="Reports\SitesReport.cs" />
     <Compile Include="Reports\WorkReport.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="UnixTimestamp.cs" />

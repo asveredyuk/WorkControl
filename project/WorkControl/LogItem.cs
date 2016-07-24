@@ -45,6 +45,13 @@ namespace WorkControl
         /// Link to the previous element, if exitst
         /// </summary>
         public LogItem previus;
+        /// <summary>
+        /// Is this process browser (extraInfo would be url)
+        /// </summary>
+        public bool IsBrowserProcess
+        {
+            get { return activeWindowProcessName == "chrome"; }
+        }
 
         public LogItem(int time, string activeWindowTitle, string activeWindowProcessName, Point cursorPos, int keypressCount, int mouseActionsCount)
         {
@@ -148,9 +155,45 @@ namespace WorkControl
             return score >= MIN_ACTIVITY_SCORE;
         }
 
+        public bool IsWorking()
+        {
+            bool active = IsActive();
+            if (!active)
+                return false;                                               //if user is not active, he is not working
+            var ptype = GetProcesScoreType();
+
+
+            return false;
+
+        }
         public Settings.Lists.ScoreType GetProcesScoreType()
         {
             return Settings.Self.ScoreLists.GetProceScoreType(activeWindowProcessName);
+        }
+
+        public Settings.Lists.ScoreType GetSiteScoreType()
+        {
+            if(IsBrowserProcess)
+                return Settings.Self.ScoreLists.GetSiteScoreType(GetSiteHost());
+            throw new Exception("cannot get site from not-browser process");
+        }
+
+        public string GetSiteHost()
+        {
+            if (!IsBrowserProcess)
+                throw new Exception("cannot get site from non-briwser process");
+            string sname = extraInfo;
+            if (!sname.StartsWith("http://") && !sname.StartsWith("https://"))
+            {
+                sname = "http://" + sname;
+            }
+            if (Uri.IsWellFormedUriString(sname, UriKind.Absolute))
+            {
+                Uri uri = new Uri(sname);
+                return uri.Host;
+            }
+            return null;
+
         }
     }
 }

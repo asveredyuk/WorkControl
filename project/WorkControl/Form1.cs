@@ -58,7 +58,8 @@ namespace WorkControl
             textBox1.AppendText($"total time {UnixTimestamp.ConvertIntervalToDateTime(rep.TotalSeconds).ToLongTimeString()}\r\n");
             textBox1.AppendText($"active percentage {rep.ActiveSeconds*100/rep.TotalSeconds}%\r\n");*/
 
-            var rep = logger.log.GetProcessesReport();
+            //var rep = logger.log.GetProcessesReport();
+            var rep = logger.log.GetSitesReport();
             //var re = from c in rep.Times
             //    orderby c.Value
             //    select $"{c.Key}\t-\t{UnixTimestamp.ConvertIntervalToDateTime(c.Value).ToLongTimeString()}";
@@ -68,7 +69,7 @@ namespace WorkControl
             foreach (var pair in from c in rep.Times orderby c.Value descending select c)
             {
                 string type = "unknown";
-                switch (Settings.Self.ScoreLists.GetProceScoreType(pair.Key))
+                switch (Settings.Self.ScoreLists.GetSiteScoreType(pair.Key))
                 {
                     case Settings.Lists.ScoreType.Nonwork:
                         type = "bad";
