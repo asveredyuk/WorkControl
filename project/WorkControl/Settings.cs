@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -77,6 +78,7 @@ namespace WorkControl
             {
                 if (host == null)
                     return null;
+                host = host.ToLower();
                 //domain is going up until it is 1st level
                 //ex. : we have www.travel.domain.com
                 //1 - try to find www.travel.domain.com, if not found
@@ -117,6 +119,9 @@ namespace WorkControl
                 string[] lines = File.ReadAllLines(FNAME);
                 var  processTypes = new Dictionary<string, ScoreType>();
                 var  siteTypes = new Dictionary<string, ScoreType>();
+                //addself
+                processTypes[Process.GetCurrentProcess().ProcessName.ToLower()]= ScoreType.Neutral;
+                //add from settings
                 Dictionary<string, ScoreType> now = null;
                 foreach (var line in lines)
                 {
@@ -142,6 +147,15 @@ namespace WorkControl
                     now[arr[0].ToLower()] = (ScoreType) int.Parse(arr[1]);
                 }
                 return new Lists(processTypes, siteTypes);
+            }
+            /// <summary>
+            /// Check if given process is browser
+            /// </summary>
+            /// <param name="procname"></param>
+            /// <returns></returns>
+            public bool IsBrowserProcess(string procname)
+            {
+                return procname == "chrome";
             }
             
         }

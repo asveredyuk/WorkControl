@@ -25,10 +25,13 @@ namespace WorkControl
         {
             timer1.Enabled = true;
         }
+
+        int nonworkCounter;
+        const int NONWORK_NOTIFY_INTERVAL = 60*5; //each 5 minutes
         private void timer1_Tick(object sender, EventArgs e)
         {
             logger.LogNow();
-            if (logger.log.IsActiveLast())
+            /*if (logger.log.IsActiveLast())
             {
                 BackColor = Color.Green;
                 //button1.Text = "active";
@@ -37,7 +40,38 @@ namespace WorkControl
             {
                 BackColor = Color.Red;
                 //button1.Text = "not active";
+            }*/
+            int workstate = logger.log.GetWorkedPriceLast();
+            if (workstate > 1)
+                nonworkCounter = 0;
+            else
+            {
+                nonworkCounter++;
+                if (nonworkCounter%NONWORK_NOTIFY_INTERVAL == 0)
+                {
+                    notifyIcon.BalloonTipIcon = ToolTipIcon.Info;
+                    notifyIcon.BalloonTipTitle = "You are not working";
+                    notifyIcon.BalloonTipText = $"You were not working for last {nonworkCounter/60} minutes";
+                    notifyIcon.ShowBalloonTip(1000);
+                    Console.WriteLine("notyfied");
+                }
             }
+            switch (workstate)
+            {
+                case 0:
+                    BackColor = Color.Red;
+                    notifyIcon.Icon = WorkControl.Properties.Resources.red;
+                    break;
+                case 1:
+                    BackColor = Color.Yellow;
+                    notifyIcon.Icon = WorkControl.Properties.Resources.yellow;
+                    break;
+                case 2:
+                    BackColor = Color.Green;
+                    notifyIcon.Icon = WorkControl.Properties.Resources.green;
+                    break;
+            }
+            
             //LogItem last = logger.log.Last();
           //  textBox1.AppendText(last.ToString() + "\r\n");
         }
@@ -97,6 +131,7 @@ namespace WorkControl
             }
         }
 
+        const int LINES_LIMIT = 10;
         private void btSitesReport_Click(object sender, EventArgs e)
         {
             textBox1.Clear();
@@ -106,7 +141,6 @@ namespace WorkControl
             //    select $"{c.Key}\t-\t{UnixTimestamp.ConvertIntervalToDateTime(c.Value).ToLongTimeString()}";
             int maxlen = rep.Times.Select(c => c.Key.Length).Max();
 
-            const int LIMIT = 5;
             int counter = 0;
             int timeCounter = 0;
             foreach (var pair in from c in rep.Times orderby c.Value descending select c)
@@ -127,12 +161,12 @@ namespace WorkControl
                 LogLine($"{string.Format("{0,-" + (maxlen + 1).ToString() + "}", pair.Key)}({type,-8}) : {UnixTimestamp.ConvertIntervalToDateTime(pair.Value).ToLongTimeString()}");
                 counter++;
                 timeCounter += pair.Value;
-                if (counter >= LIMIT)
+                if (counter >= LINES_LIMIT)
                 {
                     break;
                 }
             }
-            if (counter >= LIMIT)
+            if (counter >= LINES_LIMIT)
             {
                 // we have more
                 int totalTime = rep.Times.Sum(p => p.Value);
@@ -147,34 +181,41 @@ namespace WorkControl
             //var re = from c in rep.Times
             //    orderby c.Value
             //    select $"{c.Key}\t-\t{UnixTimestamp.ConvertIntervalToDateTime(c.Value).ToLongTimeString()}";
-            const int LIMIT = 5;
             int counter = 0;
             int timeCounter = 0;
             int maxlen = rep.Times.Select(c => c.Key.Length).Max();
             foreach (var pair in from c in rep.Times orderby c.Value descending select c)
             {
                 string type = "unknown";
-                switch (Settings.Self.ScoreLists.GetProceScoreType(pair.Key))
+                if (Settings.Self.ScoreLists.IsBrowserProcess(pair.Key))
                 {
-                    case Settings.Lists.ScoreType.Nonwork:
-                        type = "bad";
-                        break;
-                    case Settings.Lists.ScoreType.Neutral:
-                        type = "neutral";
-                        break;
-                    case Settings.Lists.ScoreType.Work:
-                        type = "good";
-                        break;
+                    type = "browser";
                 }
+                else
+                {
+                    switch (Settings.Self.ScoreLists.GetProceScoreType(pair.Key))
+                    {
+                        case Settings.Lists.ScoreType.Nonwork:
+                            type = "bad";
+                            break;
+                        case Settings.Lists.ScoreType.Neutral:
+                            type = "neutral";
+                            break;
+                        case Settings.Lists.ScoreType.Work:
+                            type = "good";
+                            break;
+                    }
+                }
+
                 LogLine($"{string.Format("{0,-"+(maxlen+1).ToString() + "}",pair.Key)}({type,-8}) : {UnixTimestamp.ConvertIntervalToDateTime(pair.Value).ToLongTimeString()}");
                 counter++;
                 timeCounter += pair.Value;
-                if (counter >= LIMIT)
+                if (counter >= LINES_LIMIT)
                 {
                     break;
                 }
             }
-            if (counter >= LIMIT)
+            if (counter >= LINES_LIMIT)
             {
                 // we have more
                 int totalTime = rep.Times.Sum(p => p.Value);
@@ -200,6 +241,24 @@ namespace WorkControl
             LogLine($"non worked time {UnixTimestamp.ConvertIntervalToDateTime(rep.NonWorkedSeconds).ToLongTimeString()}");
             LogLine($"total time {UnixTimestamp.ConvertIntervalToDateTime(rep.TotalSeconds).ToLongTimeString()}");
             LogLine($"work percentage {rep.WorkedSeconds* 100 / rep.TotalSeconds}%");
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized)
+            {
+                ShowInTaskbar = false;
+            }
+            else
+            {
+                ShowInTaskbar = true;
+            }
+        }
+
+        private void notifyIcon_Click(object sender, EventArgs e)
+        {
+            if(WindowState == FormWindowState.Minimized)
+                WindowState = FormWindowState.Normal;
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WorkControl.Reports;
 
 namespace WorkControl
 {
@@ -50,7 +51,7 @@ namespace WorkControl
         /// </summary>
         public bool IsBrowserProcess
         {
-            get { return activeWindowProcessName == "chrome"; }
+            get { return Settings.Self.ScoreLists.IsBrowserProcess(activeWindowProcessName); }
         }
 
         public LogItem(int time, string activeWindowTitle, string activeWindowProcessName, Point cursorPos, int keypressCount, int mouseActionsCount)
@@ -194,6 +195,11 @@ namespace WorkControl
             }
             return null;
 
+        }
+
+        public int GetWorkedPrice()
+        {
+            return WorkReport.GetWorkedPrice(this);
         }
     }
 }

@@ -36,15 +36,19 @@
             this.btProcessReport = new System.Windows.Forms.Button();
             this.btActiveReport = new System.Windows.Forms.Button();
             this.btWorkReport = new System.Windows.Forms.Button();
+            this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.SuspendLayout();
             // 
             // textBox1
             // 
+            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox1.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.textBox1.Location = new System.Drawing.Point(12, 138);
+            this.textBox1.Location = new System.Drawing.Point(12, 42);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(554, 139);
+            this.textBox1.Size = new System.Drawing.Size(554, 235);
             this.textBox1.TabIndex = 0;
             // 
             // timer1
@@ -54,7 +58,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(485, 35);
+            this.button1.Location = new System.Drawing.Point(491, 13);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 1;
@@ -102,6 +106,12 @@
             this.btWorkReport.UseVisualStyleBackColor = true;
             this.btWorkReport.Click += new System.EventHandler(this.btWorkReport_Click);
             // 
+            // notifyIcon
+            // 
+            this.notifyIcon.Text = "WorkControl";
+            this.notifyIcon.Visible = true;
+            this.notifyIcon.Click += new System.EventHandler(this.notifyIcon_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -116,6 +126,7 @@
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.Resize += new System.EventHandler(this.Form1_Resize);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -130,6 +141,7 @@
         private System.Windows.Forms.Button btProcessReport;
         private System.Windows.Forms.Button btActiveReport;
         private System.Windows.Forms.Button btWorkReport;
+        private System.Windows.Forms.NotifyIcon notifyIcon;
     }
 }
 

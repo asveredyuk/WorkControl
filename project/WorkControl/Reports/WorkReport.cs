@@ -18,65 +18,70 @@ namespace WorkControl.Reports
             //calc some data
             CalcWorkedSeconds();
         }
-
-        private void CalcWorkedSeconds()
-        {
-            int workedDoubledCounter = 0;
-            const int WORK_PRICE = 2;
+                    const int WORK_PRICE = 2;
             const int NEUTRAL_PRICE = 1;
             const int NONWORK_PRICE = 0;
             const int UNKNOWN_PRICE = 0;
             const int FINAL_DIVIDER = 2;
+        private void CalcWorkedSeconds()
+        {
+            int workedDoubledCounter = 0;
+
             foreach (var logItem in log)
             {
-                if (!logItem.IsActive())
-                {
-                    workedDoubledCounter += NONWORK_PRICE;
-                    continue;
-                }
-                if (logItem.IsBrowserProcess)
-                {
-                    //this is browser
-                    var sitetype = logItem.GetSiteScoreType();
-                    switch (sitetype)
-                    {
-                        case Settings.Lists.ScoreType.Nonwork:
-                            workedDoubledCounter += NONWORK_PRICE;
-                            break;
-                        case Settings.Lists.ScoreType.Neutral:
-                            workedDoubledCounter += NEUTRAL_PRICE;
-                            break;
-                        case Settings.Lists.ScoreType.Work:
-                            workedDoubledCounter += WORK_PRICE;
-                            break;
-                        case Settings.Lists.ScoreType.Unknown:
-                            workedDoubledCounter += UNKNOWN_PRICE;
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                    continue;
-                }
-                var proctype = logItem.GetProcesScoreType();
-                switch (proctype)
+                workedDoubledCounter += logItem.GetWorkedPrice();
+            }
+            WorkedSeconds = workedDoubledCounter/FINAL_DIVIDER;
+        }
+
+        public static int GetWorkedPrice(LogItem logItem)
+        {
+            if (!logItem.IsActive())
+            {
+                return NONWORK_PRICE;
+
+            }
+            if (logItem.IsBrowserProcess)
+            {
+                //this is browser
+                var sitetype = logItem.GetSiteScoreType();
+                switch (sitetype)
                 {
                     case Settings.Lists.ScoreType.Nonwork:
-                        workedDoubledCounter += NONWORK_PRICE;
-                        break;
+                        return NONWORK_PRICE;
+
                     case Settings.Lists.ScoreType.Neutral:
-                        workedDoubledCounter += NEUTRAL_PRICE;
-                        break;
+                        return NEUTRAL_PRICE;
+
                     case Settings.Lists.ScoreType.Work:
-                        workedDoubledCounter += WORK_PRICE;
-                        break;
+                        return WORK_PRICE;
+
                     case Settings.Lists.ScoreType.Unknown:
-                        workedDoubledCounter += UNKNOWN_PRICE;
-                        break;
+                        return UNKNOWN_PRICE;
+
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+
             }
-            WorkedSeconds = workedDoubledCounter/FINAL_DIVIDER;
+            var proctype = logItem.GetProcesScoreType();
+            switch (proctype)
+            {
+                case Settings.Lists.ScoreType.Nonwork:
+                    return NONWORK_PRICE;
+
+                case Settings.Lists.ScoreType.Neutral:
+                    return NEUTRAL_PRICE;
+
+                case Settings.Lists.ScoreType.Work:
+                    return WORK_PRICE;
+
+                case Settings.Lists.ScoreType.Unknown:
+                    return UNKNOWN_PRICE;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         /// <summary>

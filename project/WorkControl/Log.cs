@@ -68,7 +68,16 @@ namespace WorkControl
 
         public bool IsActiveLast()
         {
+            if (log.Count == 0)
+                return false;
             return log.Last().IsActive();
+        }
+
+        public int GetWorkedPriceLast()
+        {
+            if (log.Count == 0)
+                return 0;
+            return log.Last().GetWorkedPrice();
         }
 
         public Reports.ActivityReport GetActivityReport()
