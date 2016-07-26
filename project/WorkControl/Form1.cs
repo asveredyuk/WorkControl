@@ -82,6 +82,8 @@ namespace WorkControl
         }
         private void button1_Click(object sender, EventArgs e)
         {
+            new ListsSettingsForm(ListsSettingsForm.Mode.Processes).Show();
+            return;
             textBox1.Clear();
             //DateTime time = new DateTime();
             //time = time.AddSeconds(logger.log.GetWorkedSeconds());
@@ -259,6 +261,16 @@ namespace WorkControl
         {
             if(WindowState == FormWindowState.Minimized)
                 WindowState = FormWindowState.Normal;
+        }
+
+        private void processesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new ListsSettingsForm(ListsSettingsForm.Mode.Processes).ShowDialog();
+        }
+
+        private void sitesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new ListsSettingsForm(ListsSettingsForm.Mode.Sites).ShowDialog();
         }
     }
 }

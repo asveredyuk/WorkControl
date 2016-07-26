@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace WorkControl
 {
-    class Settings
+    public class Settings
     {
 
         private static Settings _self;
@@ -100,15 +100,15 @@ namespace WorkControl
             public void Save()
             {
                 StreamWriter sw = new StreamWriter(FNAME);
-                sw.WriteLine("--Processes");
+                sw.WriteLine("--processes");
                 foreach (var pair in processTypes)
                 {
-                    sw.WriteLine($"{pair.Key}:{pair.Value}");
+                    sw.WriteLine($"{pair.Key}:{(int)pair.Value}");
                 }
-                sw.WriteLine("--Sites");
+                sw.WriteLine("--sites");
                 foreach (var pair in siteTypes)
                 {
-                    sw.WriteLine($"{pair.Key}:{pair.Value}");
+                    sw.WriteLine($"{pair.Key}:{(int)pair.Value}");
                 }
                 sw.Close();
             }

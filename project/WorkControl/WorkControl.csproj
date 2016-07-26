@@ -54,6 +54,12 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="ListSettingsItemEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ListSettingsItemEditForm.Designer.cs">
+      <DependentUpon>ListSettingsItemEditForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ListsSettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -74,6 +80,9 @@
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ListSettingsItemEditForm.resx">
+      <DependentUpon>ListSettingsItemEditForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ListsSettingsForm.resx">
       <DependentUpon>ListsSettingsForm.cs</DependentUpon>
@@ -112,6 +121,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\yellow.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\unknown.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
