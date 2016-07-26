@@ -96,5 +96,110 @@ namespace WorkControl
                 LogLine($"other\t-\t{UnixTimestamp.ConvertIntervalToDateTime(totalTime - timeCounter).ToLongTimeString()}");
             }
         }
+
+        private void btSitesReport_Click(object sender, EventArgs e)
+        {
+            textBox1.Clear();
+            var rep = logger.log.GetSitesReport();
+            //var re = from c in rep.Times
+            //    orderby c.Value
+            //    select $"{c.Key}\t-\t{UnixTimestamp.ConvertIntervalToDateTime(c.Value).ToLongTimeString()}";
+            int maxlen = rep.Times.Select(c => c.Key.Length).Max();
+
+            const int LIMIT = 5;
+            int counter = 0;
+            int timeCounter = 0;
+            foreach (var pair in from c in rep.Times orderby c.Value descending select c)
+            {
+                string type = "unknown";
+                switch (Settings.Self.ScoreLists.GetSiteScoreType(pair.Key))
+                {
+                    case Settings.Lists.ScoreType.Nonwork:
+                        type = "bad";
+                        break;
+                    case Settings.Lists.ScoreType.Neutral:
+                        type = "neutral";
+                        break;
+                    case Settings.Lists.ScoreType.Work:
+                        type = "good";
+                        break;
+                }
+                LogLine($"{string.Format("{0,-" + (maxlen + 1).ToString() + "}", pair.Key)}({type,-8}) : {UnixTimestamp.ConvertIntervalToDateTime(pair.Value).ToLongTimeString()}");
+                counter++;
+                timeCounter += pair.Value;
+                if (counter >= LIMIT)
+                {
+                    break;
+                }
+            }
+            if (counter >= LIMIT)
+            {
+                // we have more
+                int totalTime = rep.Times.Sum(p => p.Value);
+                LogLine($"{string.Format("{0,-" + (maxlen + 1).ToString() + "}", "other")}{"",-10} : {UnixTimestamp.ConvertIntervalToDateTime(totalTime - timeCounter).ToLongTimeString()}");
+            }
+        }
+
+        private void btProcessReport_Click(object sender, EventArgs e)
+        {
+            textBox1.Clear();
+            var rep = logger.log.GetProcessesReport();
+            //var re = from c in rep.Times
+            //    orderby c.Value
+            //    select $"{c.Key}\t-\t{UnixTimestamp.ConvertIntervalToDateTime(c.Value).ToLongTimeString()}";
+            const int LIMIT = 5;
+            int counter = 0;
+            int timeCounter = 0;
+            int maxlen = rep.Times.Select(c => c.Key.Length).Max();
+            foreach (var pair in from c in rep.Times orderby c.Value descending select c)
+            {
+                string type = "unknown";
+                switch (Settings.Self.ScoreLists.GetProceScoreType(pair.Key))
+                {
+                    case Settings.Lists.ScoreType.Nonwork:
+                        type = "bad";
+                        break;
+                    case Settings.Lists.ScoreType.Neutral:
+                        type = "neutral";
+                        break;
+                    case Settings.Lists.ScoreType.Work:
+                        type = "good";
+                        break;
+                }
+                LogLine($"{string.Format("{0,-"+(maxlen+1).ToString() + "}",pair.Key)}({type,-8}) : {UnixTimestamp.ConvertIntervalToDateTime(pair.Value).ToLongTimeString()}");
+                counter++;
+                timeCounter += pair.Value;
+                if (counter >= LIMIT)
+                {
+                    break;
+                }
+            }
+            if (counter >= LIMIT)
+            {
+                // we have more
+                int totalTime = rep.Times.Sum(p => p.Value);
+                LogLine($"{string.Format("{0,-" + (maxlen + 1).ToString() + "}", "other")}{"",-10} : {UnixTimestamp.ConvertIntervalToDateTime(totalTime - timeCounter).ToLongTimeString()}");
+            }
+        }
+
+        private void btActiveReport_Click(object sender, EventArgs e)
+        {
+            textBox1.Clear();
+            var rep = logger.log.GetActivityReport();
+            LogLine($"active time {UnixTimestamp.ConvertIntervalToDateTime(rep.ActiveSeconds).ToLongTimeString()}");
+            LogLine($"non active time {UnixTimestamp.ConvertIntervalToDateTime(rep.NonActiveSeconds).ToLongTimeString()}");
+            LogLine($"total time {UnixTimestamp.ConvertIntervalToDateTime(rep.TotalSeconds).ToLongTimeString()}");
+            LogLine($"active percentage {rep.ActiveSeconds * 100 / rep.TotalSeconds}%");
+        }
+
+        private void btWorkReport_Click(object sender, EventArgs e)
+        {
+            textBox1.Clear();
+            var rep = logger.log.GetWorkReport();
+            LogLine($"worked time {UnixTimestamp.ConvertIntervalToDateTime(rep.WorkedSeconds).ToLongTimeString()}");
+            LogLine($"non worked time {UnixTimestamp.ConvertIntervalToDateTime(rep.NonWorkedSeconds).ToLongTimeString()}");
+            LogLine($"total time {UnixTimestamp.ConvertIntervalToDateTime(rep.TotalSeconds).ToLongTimeString()}");
+            LogLine($"work percentage {rep.WorkedSeconds* 100 / rep.TotalSeconds}%");
+        }
     }
 }

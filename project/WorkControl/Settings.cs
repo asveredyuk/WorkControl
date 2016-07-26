@@ -75,6 +75,8 @@ namespace WorkControl
             /// <returns></returns>
             public string GetKnownHostName(string host)
             {
+                if (host == null)
+                    return null;
                 //domain is going up until it is 1st level
                 //ex. : we have www.travel.domain.com
                 //1 - try to find www.travel.domain.com, if not found

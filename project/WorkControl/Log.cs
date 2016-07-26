@@ -85,5 +85,10 @@ namespace WorkControl
         {
             return SitesReport.GenerateReport(log, onlyActive);
         }
+
+        public Reports.WorkReport GetWorkReport()
+        {
+            return WorkReport.GenerateReport(log);
+        }
     }
 }
