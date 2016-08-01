@@ -140,6 +140,8 @@ namespace WorkControl
                 return null;
 
             AutomationElementCollection edits5 = element.FindAll(TreeScope.Subtree, new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Edit));
+            if (edits5.Count == 0)
+                return "null";
             AutomationElement edit = edits5[0];
             string vp = ((ValuePattern)edit.GetCurrentPattern(ValuePattern.Pattern)).Current.Value as string;
             //Console.WriteLine(vp);
