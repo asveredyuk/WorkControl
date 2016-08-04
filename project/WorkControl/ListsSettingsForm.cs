@@ -113,6 +113,22 @@ namespace WorkControl
             RefreshDataGrid();
         }
 
+        private void btAdd_Click(object sender, EventArgs e)
+        {
+            var f = new ListSettingsItemEditForm();
+            f.ShowDialog();
+            string name = f.name;
+            var type = f.type;
+            if (dict.ContainsKey(name))
+            {
+                MessageBox.Show("This item already exists");
+                return;
+            }
+            dict[name] = type;
+            Settings.Self.ScoreLists.Save();
+            RefreshDataGrid();
+        }
+
         //TODO: implement edit form
     }
 }
