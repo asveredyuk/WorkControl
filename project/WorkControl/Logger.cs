@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Automation;
 using System.Windows.Forms;
+using NDde.Client;
 
 namespace WorkControl
 {
@@ -130,6 +131,14 @@ namespace WorkControl
             {
                 item.PutExtraInfo(GetChromeUrl());
             }
+            if (item.activeWindowProcessName == "firefox")
+            {
+                item.PutExtraInfo(GetFirefoxUrl());
+            }
+            if (item.activeWindowProcessName == "opera")
+            {
+                item.PutExtraInfo(GetOperaUrl());
+            }
         }
 
         public static string GetChromeUrl()
@@ -143,9 +152,39 @@ namespace WorkControl
             if (edits5.Count == 0)
                 return "null";
             AutomationElement edit = edits5[0];
-            string vp = ((ValuePattern)edit.GetCurrentPattern(ValuePattern.Pattern)).Current.Value as string;
+            string vp = ((ValuePattern)edit.GetCurrentPattern(ValuePattern.Pattern)).Current.Value;
             //Console.WriteLine(vp);
             return vp;
+        }
+
+        public static string GetFirefoxUrl()
+        {
+            return GetBrowserURL("firefox");
+        }
+
+        public static string GetOperaUrl()
+        {
+            return null;
+            //return GetBrowserURL("opera");
+        }
+
+        static string GetBrowserURL(string browser)
+        {
+            try
+            {
+                DdeClient dde = new DdeClient(browser, "WWW_GetWindowInfo");
+                dde.Connect();
+                string url = dde.Request("URL", int.MaxValue);
+                string[] text = url.Split(new string[] { "\",\"" }, StringSplitOptions.RemoveEmptyEntries);
+                dde.Disconnect();
+                string res = text[0].Substring(1);
+                Console.WriteLine(res);
+                return res;
+            }
+            catch
+            {
+                return null;
+            }
         }
         [DllImport("user32.dll")]
         static extern IntPtr GetForegroundWindow();

@@ -155,7 +155,7 @@ namespace WorkControl
             /// <returns></returns>
             public bool IsBrowserProcess(string procname)
             {
-                return procname == "chrome";
+                return procname == "chrome" || procname == "firefox";
             }
             
         }
