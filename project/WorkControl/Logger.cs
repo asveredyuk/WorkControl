@@ -88,6 +88,16 @@ namespace WorkControl
                 UnhookWindowsHookEx(_mouseHookID);
             //sw.Close();
         }
+
+        public void ClearLog()
+        {
+            sw.Close();
+            if (!Directory.Exists("old"))
+                Directory.CreateDirectory("old");
+            File.Move(LOG_FNAME,"old/" + Guid.NewGuid().ToString() + ".csv");
+            sw = new StreamWriter(LOG_FNAME, false, Encoding.Default);
+            log.Clear();
+        }
         /// <summary>
         /// Init the logger to be ready for logging
         /// </summary>

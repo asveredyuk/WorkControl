@@ -272,5 +272,10 @@ namespace WorkControl
         {
             new ListsSettingsForm(ListsSettingsForm.Mode.Sites).ShowDialog();
         }
+
+        private void btClearLog_Click(object sender, EventArgs e)
+        {
+            logger.ClearLog();
+        }
     }
 }

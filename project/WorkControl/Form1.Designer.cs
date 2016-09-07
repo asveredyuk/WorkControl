@@ -42,6 +42,7 @@
             this.editListsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.processesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sitesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btClearLog = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -142,28 +143,39 @@
             this.processesToolStripMenuItem,
             this.sitesToolStripMenuItem});
             this.editListsToolStripMenuItem.Name = "editListsToolStripMenuItem";
-            this.editListsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.editListsToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
             this.editListsToolStripMenuItem.Text = "Edit lists";
             // 
             // processesToolStripMenuItem
             // 
             this.processesToolStripMenuItem.Name = "processesToolStripMenuItem";
-            this.processesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.processesToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
             this.processesToolStripMenuItem.Text = "Processes";
             this.processesToolStripMenuItem.Click += new System.EventHandler(this.processesToolStripMenuItem_Click);
             // 
             // sitesToolStripMenuItem
             // 
             this.sitesToolStripMenuItem.Name = "sitesToolStripMenuItem";
-            this.sitesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.sitesToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
             this.sitesToolStripMenuItem.Text = "Sites";
             this.sitesToolStripMenuItem.Click += new System.EventHandler(this.sitesToolStripMenuItem_Click);
+            // 
+            // btClearLog
+            // 
+            this.btClearLog.Location = new System.Drawing.Point(351, 29);
+            this.btClearLog.Name = "btClearLog";
+            this.btClearLog.Size = new System.Drawing.Size(75, 23);
+            this.btClearLog.TabIndex = 7;
+            this.btClearLog.Text = "Clear log";
+            this.btClearLog.UseVisualStyleBackColor = true;
+            this.btClearLog.Click += new System.EventHandler(this.btClearLog_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(578, 308);
+            this.Controls.Add(this.btClearLog);
             this.Controls.Add(this.btWorkReport);
             this.Controls.Add(this.btActiveReport);
             this.Controls.Add(this.btProcessReport);
@@ -198,6 +210,7 @@
         private System.Windows.Forms.ToolStripMenuItem editListsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem processesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sitesToolStripMenuItem;
+        private System.Windows.Forms.Button btClearLog;
     }
 }
 

@@ -31,6 +31,11 @@ namespace WorkControl
         {
             log.Add(item);
         }
+
+        public void Clear()
+        {
+            log.Clear();
+        }
         /// <summary>
         /// Add range of items to the log (for loading history)
         /// </summary>
