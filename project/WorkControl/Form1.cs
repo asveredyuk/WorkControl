@@ -82,7 +82,7 @@ namespace WorkControl
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            new ListsSettingsForm(ListsSettingsForm.Mode.Processes).Show();
+            new SettingsWizardForm(SettingsWizardForm.Mode.Processes).ShowDialog();
             return;
             textBox1.Clear();
             //DateTime time = new DateTime();

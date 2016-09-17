@@ -79,6 +79,12 @@
     <Compile Include="Reports\SitesReport.cs" />
     <Compile Include="Reports\WorkReport.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="SettingsWizardForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SettingsWizardForm.Designer.cs">
+      <DependentUpon>SettingsWizardForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UnixTimestamp.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
@@ -100,6 +106,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="SettingsWizardForm.resx">
+      <DependentUpon>SettingsWizardForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
